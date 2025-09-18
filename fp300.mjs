@@ -33,25 +33,25 @@ export default {
     vendor: "Aqara",
     description: "FP300 Presence Sensor",
     fromZigbee: [lumi.fromZigbee.lumi_specific],
-    toZigbee: [lumi.toZigbee.lumi_presence, lumi.toZigbee.lumi_motion_sensitivity],
+    toZigbee: [lumi.toZigbee.lumi_motion_sensitivity],
     exposes: [
         e.power_outage_count(), // Works
         e
             .motion_sensitivity_select(["low", "medium", "high"])
-            .withDescription("Presence Detection Sensitivity."), // Works?
+            .withDescription("Presence Detection Sensitivity."), // Works
     ],
     configure: async (device, coordinatorEndpoint) => {
-        // Retrieve motion sensitivity value
         const endpoint = device.getEndpoint(1);
         await endpoint.read("manuSpecificLumi", [0x010c], {manufacturerCode: manufacturerCode});
     },
     extend: [
         lumi.lumiModernExtend.fp1ePresence(), // Works
-        modernExtend.illuminance(),
-        modernExtend.humidity(),
-        modernExtend.temperature(),
+        modernExtend.illuminance(), // Works
+        modernExtend.humidity(), // Works
+        modernExtend.temperature(), // Works
         modernExtend.battery(),
         fp300.SpatialLearning(),
+        lumi.lumiModernExtend.lumiLedIndicator(), // Works?
         lumi.lumiModernExtend.fp1eRestartDevice(), // Works
         modernExtend.identify(), // Works
     ],
