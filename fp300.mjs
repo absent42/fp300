@@ -11,18 +11,6 @@ const manufacturerOptions = {
 };
 
 export const fp300 = {
-    Presence: () => {
-        const attribute = {ID: 0x0142, type: 0x20};
-        return modernExtend.binary({
-            name: "presence",
-            valueOn: [true, 1],
-            valueOff: [false, 0],
-            access: "STATE_GET",
-            cluster: "manuSpecificLumi",
-            attribute: attribute,
-            description: "Indicates whether the device detected presence",
-        });
-    },
     SpatialLearning: () => {
         return {
             isModernExtend: true,
@@ -32,20 +20,6 @@ export const fp300 = {
                     key: ["spatial_learning"],
                     convertSet: async (entity, key, value, meta) => {
                         await entity.write("manuSpecificLumi", {343: {value: 1, type: 0x20}}, manufacturerOptions.lumi);
-                    },
-                },
-            ],
-        };
-    },
-    RestartDevice: () => {
-        return {
-            isModernExtend: true,
-            exposes: [e.enum("restart_device", ea.SET, ["Restart Device"]).withDescription("Restarts the device.")],
-            toZigbee: [
-                {
-                    key: ["restart_device"],
-                    convertSet: async (entity, key, value, meta) => {
-                        await entity.write("manuSpecificLumi", {232: {value: 0x00, type: 0x10}}, manufacturerOptions.lumi);
                     },
                 },
             ],
@@ -72,13 +46,13 @@ export default {
         await endpoint.read("manuSpecificLumi", [0x010c], {manufacturerCode: manufacturerCode});
     },
     extend: [
-        fp300.Presence(), // Works
+        lumi.lumiModernExtend.fp1ePresence(), // Works
         modernExtend.illuminance(),
         modernExtend.humidity(),
         modernExtend.temperature(),
         modernExtend.battery(),
         fp300.SpatialLearning(),
-        fp300.RestartDevice(), // Works
+        lumi.lumiModernExtend.fp1eRestartDevice(), // Works
         modernExtend.identify(), // Works
     ],
     meta: {},
