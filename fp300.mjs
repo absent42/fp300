@@ -18,20 +18,13 @@ export default {
     ],
     toZigbee: [
         lumi.toZigbee.lumi_presence,
-        lumi.toZigbee.lumi_motion_sensitivity,
-        {
-            key: ["voltage"],
-            convertGet: async (entity, key, meta) => {
-                await entity.read("manuSpecificLumi", [0x023e], {manufacturerCode: manufacturerCode});
-            },
-        }
+        lumi.toZigbee.lumi_motion_sensitivity
     ],
     exposes: [
         e.power_outage_count(), // Works
         e
             .motion_sensitivity_select(["low", "medium", "high"])
             .withDescription("Presence Detection Sensitivity."), // Works
-        e.battery_voltage().withAccess(ea.STATE_GET) // TODO: Check if works and remove eventually
     ],
     configure: async (device, coordinatorEndpoint) => {
         const endpoint = device.getEndpoint(1);
@@ -41,8 +34,8 @@ export default {
     },
     extend: [
         lumi.lumiModernExtend.lumiBattery({
-            voltageToPercentage: {min: 2*2850, max: 2*3000},
-            voltageAttribute: 574
+            voltageToPercentage: {min: 2850, max: 3000},
+            voltageAttribute: 23 // 24 might be the %
         }),
         lumi.lumiModernExtend.fp1ePresence(), // Works
         modernExtend.illuminance(), // Works
