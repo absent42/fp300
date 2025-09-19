@@ -33,6 +33,10 @@ export default {
         await endpoint.read("manuSpecificLumi", [0x0142], {manufacturerCode: manufacturerCode}); // Read current presence (should adjust https://github.com/Koenkk/zigbee-herdsman-converters/blob/0755b15bf878f2261f17956efb12e52e91642cfa/src/lib/lumi.ts#L709)
     },
     extend: [
+        lumi.lumiModernExtend.lumiBattery({
+            voltageToPercentage: {min: 2850, max: 3000},
+            voltageAttribute: 23 // 24 might be the %
+        }),
         lumi.lumiModernExtend.fp1ePresence(), // Works
 
         modernExtend.enumLookup({
@@ -60,7 +64,6 @@ export default {
         modernExtend.illuminance(), // Works
         modernExtend.humidity(), // Works
         modernExtend.temperature(), // Works
-        modernExtend.battery(),
         lumi.lumiModernExtend.fp1eSpatialLearning(), // Works?
         lumi.lumiModernExtend.lumiLedIndicator(), // Works
         lumi.lumiModernExtend.fp1eRestartDevice(), // Works
@@ -79,6 +82,7 @@ export default {
             description: "Sampling period",
             zigbeeCommandOptions: {manufacturerCode},
         }),
+        
         // Temperature
         modernExtend.numeric({
             name: "temp_period",
@@ -153,7 +157,54 @@ export default {
             description: "Temperature and Humidity sampling settings",
             zigbeeCommandOptions: {manufacturerCode},
         }),
-
+        // Illuminance (Offsets seem to match temperature & humidity)
+        // TODO: Need to confirm
+        modernExtend.numeric({
+            name: "ilum_sampling_period",
+            valueMin: 0.5,
+            valueMax: 600, // got 10_000 - seems to match.
+            valueStep: 0.5,
+            scale: 1000,
+            unit: "sec",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0193, type: Zcl.DataType.UINT32},
+            description: "Illuminance sampling period",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        modernExtend.numeric({
+            name: "ilum_period",
+            valueMin: 1,
+            valueMax: 10, // got 3_600_000 - 1h?
+            valueStep: 1,
+            scale: 1000,
+            unit: "sec",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0194, type: Zcl.DataType.UINT32},
+            description: "Illuminance reporting period",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        modernExtend.numeric({
+            name: "ilum_threshold",
+            valueMin: 2,
+            valueMax: 10, /// got 1500
+            valueStep: 0.5,
+            scale: 100,
+            unit: "%",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0195, type: Zcl.DataType.UINT16},
+            description: "Illuminance reporting threshold",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        modernExtend.enumLookup({
+            name: "ilum_report_mode",
+            lookup: {no: 0, threshold: 1, period: 2, threshold_period: 3},
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0196, type: Zcl.DataType.UINT8},
+            description: "Illuminance reporting mode",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        
+        
         // OTA
         modernExtend.quirkCheckinInterval("1_HOUR"),
         lumi.lumiModernExtend.lumiZigbeeOTA()
