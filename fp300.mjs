@@ -31,6 +31,7 @@ export default {
         e
             .motion_sensitivity_select(["low", "medium", "high"])
             .withDescription("Presence Detection Sensitivity."), // Works
+        e.battery_voltage().withAccess(ea.STATE_GET) // TODO: Check if works and remove eventually
     ],
     configure: async (device, coordinatorEndpoint) => {
         const endpoint = device.getEndpoint(1);
@@ -141,7 +142,52 @@ export default {
             zigbeeCommandOptions: {manufacturerCode},
         }),
         // Illuminance (Offsets seem to match temperature & humidity)
-        // TODO
+        // TODO: Need to confirm
+        modernExtend.numeric({
+            name: "ilum_sampling_period",
+            valueMin: 0.5,
+            valueMax: 600, // got 10_000 - seems to match.
+            valueStep: 0.5,
+            scale: 1000,
+            unit: "sec",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0193, type: Zcl.DataType.UINT32},
+            description: "Illuminance sampling period",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        modernExtend.numeric({
+            name: "ilum_period",
+            valueMin: 1,
+            valueMax: 10, // got 3_600_000 - 1h?
+            valueStep: 1,
+            scale: 1000,
+            unit: "sec",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0194, type: Zcl.DataType.UINT32},
+            description: "Illuminance reporting period",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        modernExtend.numeric({
+            name: "ilum_threshold",
+            valueMin: 2,
+            valueMax: 10, /// got 1500
+            valueStep: 0.5,
+            scale: 100,
+            unit: "%",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0195, type: Zcl.DataType.UINT16},
+            description: "Illuminance reporting threshold",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        modernExtend.enumLookup({
+            name: "ilum_report_mode",
+            lookup: {no: 0, threshold: 1, period: 2, threshold_period: 3},
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0196, type: Zcl.DataType.UINT8},
+            description: "Illuminance reporting mode",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        
         
         // OTA
         modernExtend.quirkCheckinInterval("1_HOUR"),
