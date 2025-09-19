@@ -152,7 +152,7 @@ export default {
         }),
         modernExtend.enumLookup({
             name: "sampling",
-            lookup: {low: 1, standard: 2, high: 3, custom: 4},
+            lookup: {off: 0, low: 1, medium: 2, high: 3, custom: 4},
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0170, type: Zcl.DataType.UINT8},
             description: "Temperature and Humidity sampling settings",
