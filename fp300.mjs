@@ -12,8 +12,13 @@ export default {
     model: "FP300",
     vendor: "Aqara",
     description: "Presence sensor FP300",
-    fromZigbee: [lumi.fromZigbee.lumi_specific],
-    toZigbee: [lumi.toZigbee.lumi_motion_sensitivity],
+    fromZigbee: [
+        lumi.fromZigbee.lumi_specific
+    ],
+    toZigbee: [
+        lumi.toZigbee.lumi_presence,
+        lumi.toZigbee.lumi_motion_sensitivity
+    ],
     exposes: [
         e.power_outage_count(), // Works
         e
@@ -27,12 +32,13 @@ export default {
     },
     extend: [
         lumi.lumiModernExtend.fp1ePresence(), // Works
+        // Should adjust https://github.com/Koenkk/zigbee-herdsman-converters/blob/0755b15bf878f2261f17956efb12e52e91642cfa/src/lib/lumi.ts#L709
         modernExtend.illuminance(), // Works
         modernExtend.humidity(), // Works
         modernExtend.temperature(), // Works
         modernExtend.battery(),
-        lumi.lumiModernExtend.fp1eSpatialLearning(),
-        lumi.lumiModernExtend.lumiLedIndicator(), // Works?
+        lumi.lumiModernExtend.fp1eSpatialLearning(), // Works?
+        lumi.lumiModernExtend.lumiLedIndicator(), // Works
         lumi.lumiModernExtend.fp1eRestartDevice(), // Works
         modernExtend.identify(), // Works
 
