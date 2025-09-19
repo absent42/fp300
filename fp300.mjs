@@ -12,9 +12,9 @@ const manufacturerOptions = {
 
 export default {
     zigbeeModel: ["lumi.sensor_occupy.agl8"],
-    model: "lumi.sensor_occupy.agl8",
+    model: "FP300",
     vendor: "Aqara",
-    description: "FP300 Presence Sensor",
+    description: "Presence sensor FP300",
     fromZigbee: [lumi.fromZigbee.lumi_specific],
     toZigbee: [lumi.toZigbee.lumi_motion_sensitivity],
     exposes: [
