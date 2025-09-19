@@ -6,9 +6,6 @@ const e = exposes.presets;
 const ea = exposes.access;
 
 const {manufacturerCode} = lumi;
-const manufacturerOptions = {
-    lumi: {manufacturerCode: manufacturerCode, disableDefaultResponse: true},
-};
 
 export default {
     zigbeeModel: ["lumi.sensor_occupy.agl8"],
