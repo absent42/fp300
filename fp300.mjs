@@ -42,6 +42,94 @@ export default {
         lumi.lumiModernExtend.fp1eRestartDevice(), // Works
         modernExtend.identify(), // Works
 
+        // TODO: Parameters found within Climate Sensor W100
+        modernExtend.numeric({
+            name: "period",
+            valueMin: 0.5,
+            valueMax: 600, // got 600_000 - seems to match.
+            valueStep: 0.5,
+            scale: 1000,
+            unit: "sec",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0162, type: Zcl.DataType.UINT32},
+            description: "Sampling period",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        // Temperature
+        modernExtend.numeric({
+            name: "temp_period",
+            valueMin: 1,
+            valueMax: 10, // got 3_600_000 - 1h?
+            valueStep: 1,
+            scale: 1000,
+            unit: "sec",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0163, type: Zcl.DataType.UINT32},
+            description: "Temperature reporting period",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        modernExtend.numeric({
+            name: "temp_threshold",
+            valueMin: 0.2,
+            valueMax: 3,
+            valueStep: 0.1,
+            scale: 100,
+            unit: "°C",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0164, type: Zcl.DataType.UINT16},
+            description: "Temperature reporting threshold",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        modernExtend.enumLookup({
+            name: "temp_report_mode",
+            lookup: {no: 0, threshold: 1, period: 2, threshold_period: 3},
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0165, type: Zcl.DataType.UINT8},
+            description: "Temperature reporting mode",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        // Humidity
+        modernExtend.numeric({
+            name: "humi_period",
+            valueMin: 1,
+            valueMax: 10,
+            valueStep: 1,
+            scale: 1000,
+            unit: "sec",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x016a, type: Zcl.DataType.UINT32},
+            description: "Temperature reporting period",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        modernExtend.numeric({
+            name: "humi_threshold",
+            valueMin: 2,
+            valueMax: 10,
+            valueStep: 0.5,
+            scale: 100,
+            unit: "%",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x016b, type: Zcl.DataType.UINT16},
+            description: "Humidity reporting threshold",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        modernExtend.enumLookup({
+            name: "humi_report_mode",
+            lookup: {no: 0, threshold: 1, period: 2, threshold_period: 3},
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x016c, type: Zcl.DataType.UINT8},
+            description: "Humidity reporting mode",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        modernExtend.enumLookup({
+            name: "sampling",
+            lookup: {low: 1, standard: 2, high: 3, custom: 4},
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0170, type: Zcl.DataType.UINT8},
+            description: "Temperature and Humidity sampling settings",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+
         // OTA
         modernExtend.quirkCheckinInterval("1_HOUR"),
         lumi.lumiModernExtend.lumiZigbeeOTA()
