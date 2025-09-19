@@ -10,23 +10,6 @@ const manufacturerOptions = {
     lumi: {manufacturerCode: manufacturerCode, disableDefaultResponse: true},
 };
 
-export const fp300 = {
-    SpatialLearning: () => {
-        return {
-            isModernExtend: true,
-            exposes: [e.enum("spatial_learning", ea.SET, ["Start Learning"]).withDescription("Initiate AI Spatial Learning.")],
-            toZigbee: [
-                {
-                    key: ["spatial_learning"],
-                    convertSet: async (entity, key, value, meta) => {
-                        await entity.write("manuSpecificLumi", {343: {value: 1, type: 0x20}}, manufacturerOptions.lumi);
-                    },
-                },
-            ],
-        };
-    },
-};
-
 export default {
     zigbeeModel: ["lumi.sensor_occupy.agl8"],
     model: "lumi.sensor_occupy.agl8",
@@ -51,7 +34,7 @@ export default {
         modernExtend.humidity(), // Works
         modernExtend.temperature(), // Works
         modernExtend.battery(),
-        fp300.SpatialLearning(),
+        lumi.lumiModernExtend.fp1eSpatialLearning(),
         lumi.lumiModernExtend.lumiLedIndicator(), // Works?
         lumi.lumiModernExtend.fp1eRestartDevice(), // Works
         modernExtend.identify(), // Works
