@@ -18,7 +18,13 @@ export default {
     ],
     toZigbee: [
         lumi.toZigbee.lumi_presence,
-        lumi.toZigbee.lumi_motion_sensitivity
+        lumi.toZigbee.lumi_motion_sensitivity,
+        {
+            key: ["voltage"],
+            convertGet: async (entity, key, meta) => {
+                await entity.read("manuSpecificLumi", [0x023e], {manufacturerCode: manufacturerCode});
+            },
+        }
     ],
     exposes: [
         e.power_outage_count(), // Works
@@ -33,11 +39,14 @@ export default {
         await endpoint.read("manuSpecificLumi", [0x0142], {manufacturerCode: manufacturerCode}); // Read current presence (should adjust https://github.com/Koenkk/zigbee-herdsman-converters/blob/0755b15bf878f2261f17956efb12e52e91642cfa/src/lib/lumi.ts#L709)
     },
     extend: [
+        lumi.lumiModernExtend.lumiBattery({
+            voltageToPercentage: {min: 2*2850, max: 2*3000},
+            voltageAttribute: 574
+        }),
         lumi.lumiModernExtend.fp1ePresence(), // Works
         modernExtend.illuminance(), // Works
         modernExtend.humidity(), // Works
         modernExtend.temperature(), // Works
-        modernExtend.battery(),
         lumi.lumiModernExtend.fp1eSpatialLearning(), // Works?
         lumi.lumiModernExtend.lumiLedIndicator(), // Works
         lumi.lumiModernExtend.fp1eRestartDevice(), // Works
@@ -56,6 +65,7 @@ export default {
             description: "Sampling period",
             zigbeeCommandOptions: {manufacturerCode},
         }),
+        
         // Temperature
         modernExtend.numeric({
             name: "temp_period",
@@ -130,7 +140,9 @@ export default {
             description: "Temperature and Humidity sampling settings",
             zigbeeCommandOptions: {manufacturerCode},
         }),
-
+        // Illuminance (Offsets seem to match temperature & humidity)
+        // TODO
+        
         // OTA
         modernExtend.quirkCheckinInterval("1_HOUR"),
         lumi.lumiModernExtend.lumiZigbeeOTA()
