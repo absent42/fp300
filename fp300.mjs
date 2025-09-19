@@ -34,6 +34,29 @@ export default {
     },
     extend: [
         lumi.lumiModernExtend.fp1ePresence(), // Works
+
+        modernExtend.enumLookup({
+            name: "presence_detection_options",
+            lookup: {both: 0, mmwave: 1, pir: 2},
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0199, type: Zcl.DataType.UINT8},
+            description: "Presence detection sensor type",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+
+        modernExtend.numeric({
+            name: "absence_delay_timer",
+            valueMin: 10,
+            valueMax: 300,
+            valueStep: 5,
+            scale: 1,
+            unit: "sec",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0197, type: Zcl.DataType.UINT32},
+            description: "Value for delay before the device reports absence when no presence is detected",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        
         modernExtend.illuminance(), // Works
         modernExtend.humidity(), // Works
         modernExtend.temperature(), // Works
