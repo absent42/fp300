@@ -1,3 +1,4 @@
+import {Zcl} from "zigbee-herdsman";
 import * as exposes from "zigbee-herdsman-converters/lib/exposes";
 import * as lumi from "zigbee-herdsman-converters/lib/lumi";
 import * as modernExtend from "zigbee-herdsman-converters/lib/modernExtend";
