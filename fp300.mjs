@@ -106,7 +106,7 @@ export default {
             unit: "°C",
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0164, type: Zcl.DataType.UINT16},
-            description: "Reporting will trigger when temperature reaches this value wehn in custom mode,
+            description: "Reporting will trigger when temperature reaches this value wehn in custom mode",
             zigbeeCommandOptions: {manufacturerCode},
         }),
         modernExtend.enumLookup({
