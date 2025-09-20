@@ -206,7 +206,7 @@ export default {
             zigbeeCommandOptions: {manufacturerCode},
         }),
         modernExtend.enumLookup({
-            name: "ilum_report_mode",
+            name: "light_report_mode",
             lookup: {no: 0, threshold: 1, interval: 2, threshold_interval: 3},
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0196, type: Zcl.DataType.UINT8}, // Attribute: 406
