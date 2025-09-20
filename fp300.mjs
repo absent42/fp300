@@ -162,7 +162,7 @@ export default {
         }),
         // Illuminance (Offsets seem to match temperature & humidity)
         modernExtend.enumLookup({ // CONFIRMED
-            name: "light_detection_sensor",
+            name: "light_sampling",
             lookup: {off: 0, low: 1, medium: 2, high: 3, custom: 4},
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0192, type: Zcl.DataType.UINT8}, // Attribute: 402
