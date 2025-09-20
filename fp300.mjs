@@ -14,7 +14,15 @@ export default {
     vendor: "Aqara",
     description: "Presence sensor FP300",
     fromZigbee: [
-        lumi.fromZigbee.lumi_specific
+        lumi.fromZigbee.lumi_specific,
+        { // TODO: Test if FP300 sends any input using genMultistateInput cluster
+            cluster: "genMultistateInput",
+            type: ["attributeReport", "readResponse"],
+            convert: (model, msg, publish, options, meta) => {
+                // if (hasAlreadyProcessedMessage(msg, model)) return;
+                console.log("FP300 Received multistateinput", msg.data)
+            },
+        }
     ],
     toZigbee: [
         lumi.toZigbee.lumi_presence,
