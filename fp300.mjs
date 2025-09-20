@@ -258,13 +258,31 @@ export default {
                     .withValueStep(1)
                     .withDescription("Specifies the range that is being detected. Requires mmWave radar mode.")
             ],
+            fromZigbee: [
+                {
+                    cluster: "manuSpecificLumi",
+                    type: ["attributeReport", "readResponse"],
+                    convert: async (model, msg, publish, options, meta) => {
+                        if (msg.data["410"] && Buffer.isBuffer(msg.data["410"])) {
+                            const buffer = msg.data["410"]
+                            return {
+                                detection_range_prefix: buffer.readIntLE(0, 2),
+                                detection_range: buffer.readIntLE(2, 3)
+                            }
+                        }
+                    },
+                }
+            ],
             toZigbee: [
                 {
                     key: ["detection_range"],
                     convertSet: async (entity, key, value, meta) => {
-                        // Uint8: 1 (0x08) attribute 0x019a = 410
+                        const buffer = Buffer.allocUnsafe(5)
+                        buffer.writeUIntLE(meta.state?.detection_range_prefix ?? 0x0300, 0, 2)
+                        buffer.writeUIntLE(value, 2, 3)
+
                         await entity.write("manuSpecificLumi", {
-                            410: {value: 1, type: 0x41}
+                            410: {value: buffer, type: 0x41}
                         }, manufacturerOptions.lumi);
                     },
                 },
