@@ -267,8 +267,8 @@ export default {
                         if (msg.data["410"] && Buffer.isBuffer(msg.data["410"])) {
                             const buffer = msg.data["410"]
                             return {
-                                detection_range_prefix: (buffer.length > 0) ? buffer.readIntLE(0, 2) : 0x0300,
-                                detection_range: (buffer.length > 0) ? buffer.readIntLE(2, 3) : 0xFFFFFF
+                                detection_range_prefix: (buffer.length > 0) ? buffer.readUIntLE(0, 2) : 0x0300,
+                                detection_range: (buffer.length > 0) ? buffer.readUIntLE(2, 3) : 0xFFFFFF
                             }
                         }
                     },
