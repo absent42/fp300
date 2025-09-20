@@ -292,6 +292,5 @@ export default {
         // OTA
         modernExtend.quirkCheckinInterval("1_HOUR"),
         lumi.lumiModernExtend.lumiZigbeeOTA()
-    ],
-    meta: {},
+    ]
 };
