@@ -32,6 +32,7 @@ export default {
         await endpoint.read("manuSpecificLumi", [0x010c], {manufacturerCode: manufacturerCode}); // Read motion sensitivity (change required in https://github.com/Koenkk/zigbee-herdsman-converters/blob/0755b15bf878f2261f17956efb12e52e91642cfa/src/lib/lumi.ts#L641 )
         await endpoint.read("manuSpecificLumi", [0x0142], {manufacturerCode: manufacturerCode}); // Read current presence (should adjust https://github.com/Koenkk/zigbee-herdsman-converters/blob/0755b15bf878f2261f17956efb12e52e91642cfa/src/lib/lumi.ts#L709)
         await endpoint.read("manuSpecificLumi", [0x0197], {manufacturerCode: manufacturerCode}); // Read current absence delay timer value
+        await endpoint.read("manuSpecificLumi", [0x019a], {manufacturerCode: manufacturerCode}); // Read current detection range
     },
     extend: [
         lumi.lumiModernExtend.lumiBattery({
@@ -287,7 +288,7 @@ export default {
                     },
                     convertGet: async (entity, key, meta) => {
                         const endpoint = meta.device.getEndpoint(1);
-                        await endpoint.read("manuSpecificLumi", [0x0197], {manufacturerCode: manufacturerCode});
+                        await endpoint.read("manuSpecificLumi", [0x019a], {manufacturerCode: manufacturerCode});
                     }
                 },
             ]
