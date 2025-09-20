@@ -214,7 +214,31 @@ export default {
             zigbeeCommandOptions: {manufacturerCode},
         }),
         
-        
+        // Read current target distance
+        modernExtend.binary({
+            name: "track_target_distance",
+            valueOn: ["ON", 1],
+            valueOff: ["OFF", 0],
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0198, type: 0x20}, // Attribute: 408
+            description: "Track current target distance",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+        /*{
+            isModernExtend: true,
+            exposes: [e.enum("track_target_distance", ea.SET, ["Start Tracking Distance"]).withDescription("Initiate current target distance tracking.")],
+            toZigbee: [
+                {
+                    key: ["track_target_distance"],
+                    convertSet: async (entity, key, value, meta) => {
+                        // Uint8: 1 (0x08) attribute 0x0198 = 408
+                        await entity.write("manuSpecificLumi", {408: {value: 1, type: 0x20}}, manufacturerOptions.lumi);
+                    },
+                },
+            ],
+        },*/
+        lumi.lumiModernExtend.fp1eTargetDistance(), // Same attribute. Need to send 0x0198 to start tracking
+
         // OTA
         modernExtend.quirkCheckinInterval("1_HOUR"),
         lumi.lumiModernExtend.lumiZigbeeOTA()
