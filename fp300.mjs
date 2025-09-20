@@ -36,7 +36,8 @@ export default {
     extend: [
         lumi.lumiModernExtend.lumiBattery({
             voltageToPercentage: {min: 2850, max: 3000},
-            voltageAttribute: 23 // 24 might be the %
+            voltageAttribute: 0x0017, // Attribute: 23
+            //percentageAtrribute: 0x0018 // Attribute: 24 // TODO: Should confirm to be sure
         }),
         lumi.lumiModernExtend.fp1ePresence(), // Works
 
@@ -44,7 +45,7 @@ export default {
             name: "presence_detection_options",
             lookup: {both: 0, mmwave: 1, pir: 2},
             cluster: "manuSpecificLumi",
-            attribute: {ID: 0x0199, type: Zcl.DataType.UINT8},
+            attribute: {ID: 0x0199, type: Zcl.DataType.UINT8}, // Attribute: 409
             description: "Presence detection sensor type",
             zigbeeCommandOptions: {manufacturerCode},
         }),
@@ -57,7 +58,7 @@ export default {
             scale: 1,
             unit: "sec",
             cluster: "manuSpecificLumi",
-            attribute: {ID: 0x0197, type: Zcl.DataType.UINT32},
+            attribute: {ID: 0x0197, type: Zcl.DataType.UINT32}, // Attribute: 407
             description: "Value for delay before the device reports absence when no presence is detected",
             zigbeeCommandOptions: {manufacturerCode},
         }),
@@ -70,17 +71,25 @@ export default {
         lumi.lumiModernExtend.fp1eRestartDevice(), // Works
         modernExtend.identify(), // Works
 
-        // TODO: Parameters found within Climate Sensor W100
+        // Sampling parameters
+        modernExtend.enumLookup({
+            name: "sampling",
+            lookup: {off: 0, low: 1, medium: 2, high: 3, custom: 4},
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0170, type: Zcl.DataType.UINT8}, // Attribute: 368
+            description: "Temperature and Humidity sampling frequency settings, changing the configuration will affect battery life. Setting it to custom allows specifying sampling period.",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
         modernExtend.numeric({
             name: "sampling_period",
-            valueMin: 0.5,
-            valueMax: 600, // got 600_000 - seems to match.
+            valueMin: 0.5, // Min: 500ms
+            valueMax: 3600, // Max: 1h = 3600s
             valueStep: 0.5,
             scale: 1000,
             unit: "sec",
             cluster: "manuSpecificLumi",
-            attribute: {ID: 0x0162, type: Zcl.DataType.UINT32},
-            description: "Reporting period for temperature and humidity when in custom mode",
+            attribute: {ID: 0x0162, type: Zcl.DataType.UINT32}, // Attribute: 354
+            description: "Sampling interval for temperature and humidity when sampling is in custom mode.",
             zigbeeCommandOptions: {manufacturerCode},
         }),
         
@@ -132,13 +141,13 @@ export default {
         }),
         modernExtend.numeric({
             name: "humi_threshold",
-            valueMin: 2,
-            valueMax: 10,
+            valueMin: 2, // Min: 2%
+            valueMax: 10, // Max: 10%
             valueStep: 0.5,
             scale: 100,
             unit: "%",
             cluster: "manuSpecificLumi",
-            attribute: {ID: 0x016b, type: Zcl.DataType.UINT16},
+            attribute: {ID: 0x016b, type: Zcl.DataType.UINT16}, // Attribute: 363
             description: "Reporting will trigger when humidity reaches this value when in custom mode",
             zigbeeCommandOptions: {manufacturerCode},
         }),
@@ -146,16 +155,8 @@ export default {
             name: "humi_report_mode",
             lookup: {no: 0, threshold: 1, period: 2, threshold_period: 3},
             cluster: "manuSpecificLumi",
-            attribute: {ID: 0x016c, type: Zcl.DataType.UINT8},
+            attribute: {ID: 0x016c, type: Zcl.DataType.UINT8}, // Attribute: 364
             description: "Humidity reporting mode",
-            zigbeeCommandOptions: {manufacturerCode},
-        }),
-        modernExtend.enumLookup({
-            name: "sampling",
-            lookup: {off: 0, low: 1, medium: 2, high: 3, custom: 4},
-            cluster: "manuSpecificLumi",
-            attribute: {ID: 0x0170, type: Zcl.DataType.UINT8},
-            description: "Temperature and Humidity frequency settings, changing the configuration will affect battery life",
             zigbeeCommandOptions: {manufacturerCode},
         }),
         // Illuminance (Offsets seem to match temperature & humidity)
