@@ -232,7 +232,7 @@ export default {
                     key: ["track_target_distance"],
                     convertSet: async (entity, key, value, meta) => {
                         // Uint8: 1 (0x08) attribute 0x0198 = 408
-                        await entity.write("manuSpecificLumi", {408: {value: 1, type: 0x20}}, manufacturerOptions.lumi);
+                        await entity.write("manuSpecificLumi", {408: {value: 1, type: 0x20}}, {manufacturerCode: manufacturerCode});
                     },
                 },
             ],
@@ -252,7 +252,7 @@ export default {
                 // 2^6 = 1.50 - 1.75m    2^14 = 3.50 - 3.75m    2^22 = 5.50 - 5.75m
                 // 2^7 = 1.75 - 2.00m    2^15 = 3.75 - 4.00m    2^23 = 5.75 - 6.00m
                 e
-                    .numeric('detection_range')
+                    .numeric('detection_range', ea.ALL)
                     .withValueMin(0)
                     .withValueMax((1 << 24) - 1)
                     .withValueStep(1)
@@ -283,8 +283,12 @@ export default {
 
                         await entity.write("manuSpecificLumi", {
                             410: {value: buffer, type: 0x41}
-                        }, manufacturerOptions.lumi);
+                        }, {manufacturerCode: manufacturerCode});
                     },
+                    convertGet: async (entity, key, meta) => {
+                        const endpoint = meta.device.getEndpoint(1);
+                        await endpoint.read("manuSpecificLumi", [0x0197], {manufacturerCode: manufacturerCode});
+                    }
                 },
             ]
         },
