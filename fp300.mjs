@@ -77,14 +77,14 @@ export default {
             lookup: {off: 0, low: 1, medium: 2, high: 3, custom: 4},
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0170, type: Zcl.DataType.UINT8}, // Attribute: 368
-            description: "Temperature and Humidity sampling frequency settings, changing the configuration will affect battery life. Setting it to custom allows specifying sampling period.",
+            description: "Temperature and Humidity sampling frequency settings, changing the configuration will affect battery life. Setting it to custom allows specifying sampling interval.",
             zigbeeCommandOptions: {manufacturerCode},
         }),
         modernExtend.numeric({
-            name: "sampling_period",
+            name: "sampling_interval",
             valueMin: 0.5, // Min: 500ms
             valueMax: 3600, // Max: 1h = 3600s
-            valueStep: 0.5,
+            valueStep: 0.5, // Step: 500ms
             scale: 1000,
             unit: "sec",
             cluster: "manuSpecificLumi",
@@ -95,66 +95,66 @@ export default {
         
         // Temperature
         modernExtend.numeric({
-            name: "temp_period",
-            valueMin: 20, // Min: 20s
+            name: "temp_interval",
+            valueMin: 600, // Min: 10min = 600s
             valueMax: 3600, // Max: 1h = 3600s
-            valueStep: 1,
+            valueStep: 600, // Step: 10min = 600s
             scale: 1000,
             unit: "sec",
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0163, type: Zcl.DataType.UINT32}, // Attribute: 355
-            description: "Temperature reporting period",
+            description: "Custom temperature reporting interval.",
             zigbeeCommandOptions: {manufacturerCode},
         }),
         modernExtend.numeric({
             name: "temp_threshold",
             valueMin: 0.2, // Min: 0,2 C
             valueMax: 3, // Max: 3,0 C
-            valueStep: 0.1,
+            valueStep: 0.1, // Step: 0,1 C
             scale: 100,
             unit: "°C",
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0164, type: Zcl.DataType.UINT16}, // Attribute: 356
-            description: "Reporting will trigger when temperature reaches this value when in custom mode",
+            description: "Reporting will trigger when temperature reaches this value when in custom mode.",
             zigbeeCommandOptions: {manufacturerCode},
         }),
         modernExtend.enumLookup({
             name: "temp_report_mode",
-            lookup: {no: 0, threshold: 1, period: 2, threshold_period: 3},
+            lookup: {no: 0, threshold: 1, interval: 2, threshold_interval: 3},
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0165, type: Zcl.DataType.UINT8}, // Attribute: 357
-            description: "Temperature reporting mode when in custom mode",
+            description: "Temperature reporting mode when in custom mode.",
             zigbeeCommandOptions: {manufacturerCode},
         }),
         
         // Humidity
         modernExtend.numeric({
-            name: "humi_period",
-            valueMin: 20, // Min: 20s
+            name: "humi_interval",
+            valueMin: 600, // Min: 10min = 600s
             valueMax: 3600, // Max: 1h = 3600s
-            valueStep: 1,
+            valueStep: 600, // Step: 10min = 600s
             scale: 1000,
             unit: "sec",
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x016a, type: Zcl.DataType.UINT32}, // Attribute: 362
-            description: "Temperature reporting period",
+            description: "Custom humidity reporting interval.",
             zigbeeCommandOptions: {manufacturerCode},
         }),
         modernExtend.numeric({
             name: "humi_threshold",
             valueMin: 2, // Min: 2%
             valueMax: 10, // Max: 10%
-            valueStep: 0.5,
+            valueStep: 0.5, // Step: 0,5%
             scale: 100,
             unit: "%",
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x016b, type: Zcl.DataType.UINT16}, // Attribute: 363
-            description: "Reporting will trigger when humidity reaches this value when in custom mode",
+            description: "Reporting will trigger when humidity reaches this value when in custom mode.",
             zigbeeCommandOptions: {manufacturerCode},
         }),
         modernExtend.enumLookup({
             name: "humi_report_mode",
-            lookup: {no: 0, threshold: 1, period: 2, threshold_period: 3},
+            lookup: {no: 0, threshold: 1, interval: 2, threshold_interval: 3},
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x016c, type: Zcl.DataType.UINT8}, // Attribute: 364
             description: "Humidity reporting mode",
@@ -170,34 +170,34 @@ export default {
             zigbeeCommandOptions: {manufacturerCode},
         }),
         modernExtend.numeric({
-            name: "ilum_sampling_period",
+            name: "light_sampling_interval",
             valueMin: 0.5, // Min: 500ms
             valueMax: 3600, // Max: 1h = 3600s 
-            valueStep: 0.5,
+            valueStep: 0.5, // Step: 500ms
             scale: 1000,
             unit: "sec",
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0193, type: Zcl.DataType.UINT32}, // Attribute: 403
-            description: "How often illuminance readings are taken in custom mode",
+            description: "How often illuminance readings are taken in custom mode.",
             zigbeeCommandOptions: {manufacturerCode},
         }),
         modernExtend.numeric({
-            name: "ilum_period",
+            name: "light_interval",
             valueMin: 20, // Min: 20s
             valueMax: 3600, // Max: 1h = 3600s
-            valueStep: 1,
+            valueStep: 20, // Step: 20s
             scale: 1000,
             unit: "sec",
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0194, type: Zcl.DataType.UINT32}, // attribute 404
-            description: "Interval for illuminance data reporting period in custom mode",
+            description: "Interval for illuminance data reporting interval in custom mode.",
             zigbeeCommandOptions: {manufacturerCode},
         }),
         modernExtend.numeric({
-            name: "ilum_threshold",
+            name: "light_threshold",
             valueMin: 3, // Min: 3%
             valueMax: 20, /// Max: 20%
-            valueStep: 0.5,
+            valueStep: 0.5, // Step: 0,5%
             scale: 100,
             unit: "%",
             cluster: "manuSpecificLumi",
@@ -207,7 +207,7 @@ export default {
         }),
         modernExtend.enumLookup({
             name: "ilum_report_mode",
-            lookup: {no: 0, threshold: 1, period: 2, threshold_period: 3},
+            lookup: {no: 0, threshold: 1, interval: 2, threshold_interval: 3},
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0196, type: Zcl.DataType.UINT8}, // Attribute: 406
             description: "Illuminance reporting mode",
