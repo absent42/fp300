@@ -160,6 +160,14 @@ export default {
         }),
         // Illuminance (Offsets seem to match temperature & humidity)
         // TODO: Need to confirm
+        modernExtend.enumLookup({
+            name: "light_detection_sensor",
+            lookup: {off: 0, low: 1, medium: 2, high: 3, custom: 4},
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x0192, type: Zcl.DataType.UINT8},
+            description: "Light detecition frequency settings, changing the configuration will affect battery life.",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
         modernExtend.numeric({
             name: "ilum_sampling_period",
             valueMin: 0.5,
