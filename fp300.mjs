@@ -32,7 +32,7 @@ export default {
         await endpoint.read("manuSpecificLumi", [0x010c], {manufacturerCode: manufacturerCode}); // Read motion sensitivity (change required in https://github.com/Koenkk/zigbee-herdsman-converters/blob/0755b15bf878f2261f17956efb12e52e91642cfa/src/lib/lumi.ts#L641 )
         await endpoint.read("manuSpecificLumi", [0x0142], {manufacturerCode: manufacturerCode}); // Read current presence (should adjust https://github.com/Koenkk/zigbee-herdsman-converters/blob/0755b15bf878f2261f17956efb12e52e91642cfa/src/lib/lumi.ts#L709)
         await endpoint.read("manuSpecificLumi", [0x0197], {manufacturerCode: manufacturerCode}); // Read current absence delay timer value
-        await endpoint.read("manuSpecificLumi", [0x019a], {manufacturerCode: manufacturerCode}); // Read current detection range
+        await endpoint.read("manuSpecificLumi", [0x019a], {manufacturerCode: manufacturerCode}); // Read detection range
     },
     extend: [
         lumi.lumiModernExtend.lumiBattery({
@@ -267,8 +267,8 @@ export default {
                         if (msg.data["410"] && Buffer.isBuffer(msg.data["410"])) {
                             const buffer = msg.data["410"]
                             return {
-                                detection_range_prefix: buffer.readIntLE(0, 2),
-                                detection_range: buffer.readIntLE(2, 3)
+                                detection_range_prefix: (buffer.length > 0) ? buffer.readIntLE(0, 2) : 0x0300,
+                                detection_range: (buffer.length > 0) ? buffer.readIntLE(2, 3) : 0xFFFFFF
                             }
                         }
                     },
