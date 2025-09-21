@@ -266,6 +266,14 @@ export default {
                     convert: async (model, msg, publish, options, meta) => {
                         if (msg.data["410"] && Buffer.isBuffer(msg.data["410"])) {
                             const buffer = msg.data["410"]
+                            await publish({ // Await publish to satisfy async specs
+                                topic: "zigbee2mqtt/lumi/410",
+                                payload: {
+                                    message: "Received buffer",
+                                    length: buffer.length,
+                                    raw: buffer.toString("hex"),
+                                },
+                            });
                             return {
                                 detection_range_prefix: (buffer.length > 0) ? buffer.readUIntLE(0, 2) : 0x0300,
                                 detection_range: (buffer.length > 0) ? buffer.readUIntLE(2, 3) : 0xFFFFFF
