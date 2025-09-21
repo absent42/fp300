@@ -32,6 +32,7 @@ export default {
         await endpoint.read("manuSpecificLumi", [0x010c], {manufacturerCode: manufacturerCode}); // Read motion sensitivity (change required in https://github.com/Koenkk/zigbee-herdsman-converters/blob/0755b15bf878f2261f17956efb12e52e91642cfa/src/lib/lumi.ts#L641 )
         await endpoint.read("manuSpecificLumi", [0x0142], {manufacturerCode: manufacturerCode}); // Read current presence (should adjust https://github.com/Koenkk/zigbee-herdsman-converters/blob/0755b15bf878f2261f17956efb12e52e91642cfa/src/lib/lumi.ts#L709)
         await endpoint.read("manuSpecificLumi", [0x0197], {manufacturerCode: manufacturerCode}); // Read current absence delay timer value
+        await endpoint.read("manuSpecificLumi", [0x019a], {manufacturerCode: manufacturerCode}); // Read detection range
     },
     extend: [
         lumi.lumiModernExtend.lumiBattery({
@@ -162,7 +163,7 @@ export default {
         }),
         // Illuminance (Offsets seem to match temperature & humidity)
         modernExtend.enumLookup({ // CONFIRMED
-            name: "light_detection_sensor",
+            name: "light_sampling",
             lookup: {off: 0, low: 1, medium: 2, high: 3, custom: 4},
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0192, type: Zcl.DataType.UINT8}, // Attribute: 402
@@ -232,16 +233,69 @@ export default {
                     key: ["track_target_distance"],
                     convertSet: async (entity, key, value, meta) => {
                         // Uint8: 1 (0x08) attribute 0x0198 = 408
-                        await entity.write("manuSpecificLumi", {408: {value: 1, type: 0x20}}, manufacturerOptions.lumi);
+                        await entity.write("manuSpecificLumi", {408: {value: 1, type: 0x20}}, {manufacturerCode: manufacturerCode});
                     },
                 },
             ],
         },*/
         lumi.lumiModernExtend.fp1eTargetDistance(), // Same attribute. Need to send 0x0198 to start tracking
 
+        // Detection Range
+        {
+            isModernExtend: true,
+            exposes: [
+                // 2^0 = 0.00 - 0.25m    2^8  = 2.00 - 2.25m    2^16 = 4.00 - 4.25m
+                // 2^1 = 0.25 - 0.50m    2^9  = 2.25 - 2.50m    2^17 = 4.25 - 4.50m
+                // 2^2 = 0.50 - 0.75m    2^10 = 2.50 - 2.75m    2^18 = 4.50 - 4.75m
+                // 2^3 = 0.75 - 1.00m    2^11 = 2.75 - 3.00m    2^19 = 4.75 - 5.00m
+                // 2^4 = 1.00 - 1.25m    2^12 = 3.00 - 3.25m    2^20 = 5.00 - 5.25m
+                // 2^5 = 1.25 - 1.50m    2^13 = 3.25 - 3.50m    2^21 = 5.25 - 5.50m
+                // 2^6 = 1.50 - 1.75m    2^14 = 3.50 - 3.75m    2^22 = 5.50 - 5.75m
+                // 2^7 = 1.75 - 2.00m    2^15 = 3.75 - 4.00m    2^23 = 5.75 - 6.00m
+                e
+                    .numeric('detection_range', ea.ALL)
+                    .withValueMin(0)
+                    .withValueMax((1 << 24) - 1)
+                    .withValueStep(1)
+                    .withDescription("Specifies the range that is being detected. Requires mmWave radar mode.")
+            ],
+            fromZigbee: [
+                {
+                    cluster: "manuSpecificLumi",
+                    type: ["attributeReport", "readResponse"],
+                    convert: async (model, msg, publish, options, meta) => {
+                        if (msg.data["410"] && Buffer.isBuffer(msg.data["410"])) {
+                            const buffer = msg.data["410"]
+                            return {
+                                detection_range_prefix: (buffer.length > 0) ? buffer.readUIntLE(0, 2) : 0x0300,
+                                detection_range: (buffer.length > 0) ? buffer.readUIntLE(2, 3) : 0xFFFFFF
+                            }
+                        }
+                    },
+                }
+            ],
+            toZigbee: [
+                {
+                    key: ["detection_range"],
+                    convertSet: async (entity, key, value, meta) => {
+                        const buffer = Buffer.allocUnsafe(5)
+                        buffer.writeUIntLE(meta.state?.detection_range_prefix ?? 0x0300, 0, 2)
+                        buffer.writeUIntLE(value, 2, 3)
+
+                        await entity.write("manuSpecificLumi", {
+                            410: {value: buffer, type: 0x41}
+                        }, {manufacturerCode: manufacturerCode});
+                    },
+                    convertGet: async (entity, key, meta) => {
+                        const endpoint = meta.device.getEndpoint(1);
+                        await endpoint.read("manuSpecificLumi", [0x019a], {manufacturerCode: manufacturerCode});
+                    }
+                },
+            ]
+        },
+
         // OTA
         modernExtend.quirkCheckinInterval("1_HOUR"),
         lumi.lumiModernExtend.lumiZigbeeOTA()
-    ],
-    meta: {},
+    ]
 };
