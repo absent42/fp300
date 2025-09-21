@@ -121,7 +121,7 @@ export default {
         }),
         modernExtend.enumLookup({
             name: "temp_reporting_mode",
-            lookup: {no: 0, threshold: 1, interval: 2, threshold_interval: 3},
+            lookup: {threshold: 1, "reporting interval": 2, "threshold and interval": 3},
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0165, type: Zcl.DataType.UINT8}, // Attribute: 357
             description: "Temperature reporting type when in custom mode.",
@@ -155,7 +155,7 @@ export default {
         }),
         modernExtend.enumLookup({
             name: "humidity_report_mode",
-            lookup: {no: 0, threshold: 1, interval: 2, threshold_interval: 3},
+            lookup: {threshold: 1, "reporting interval": 2, "threshold and interval": 3},
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x016c, type: Zcl.DataType.UINT8}, // Attribute: 364
             description: "Humidity reporting type when in custom mode.",
@@ -208,7 +208,7 @@ export default {
         }),
         modernExtend.enumLookup({
             name: "light_report_mode",
-            lookup: {no: 0, threshold: 1, interval: 2, threshold_interval: 3},
+            lookup: {threshold: 1, "reporting interval": 2, "threshold and interval": 3},
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0196, type: Zcl.DataType.UINT8}, // Attribute: 406
             description: "illumination reporting type when in custom mode.",
