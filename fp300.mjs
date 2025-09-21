@@ -378,28 +378,6 @@ export default {
                     .text("schedule_end_time", ea.ALL)
                     .withDescription(
                         "LED off schedule end time (HH:MM format)",
-                    ),
-                e
-                    .composite("schedule_start_time_composite", "schedule_start_time_composite", ea.ALL)
-                    .withDescription("LED off schedule end time (HH:MM format)")
-                    .withFeature(e.enum("schedule_start_time_hour", ea.STATE_SET, ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]).withDescription("Hour"))
-                    .withFeature(e.enum("schedule_start_time_minue", ea.STATE_SET, ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59"]).withDescription("Minute")),
-                e
-                    .composite("schedule_end_time_composite", "schedule_end_time_composite", ea.ALL)
-                    .withDescription("LED on schedule end time (HH:MM format)")
-                    .withFeature(
-                        e
-                            .numeric("schedule_end_time_hour", ea.SET)
-                            .withValueMin(0)
-                            .withValueMax(23)
-                            .withValueStep(1)
-                    )
-                    .withFeature(
-                        e
-                            .numeric("schedule_end_time_minute", ea.SET)
-                            .withValueMin(0)
-                            .withValueMax(59)
-                            .withValueStep(1)
                     )
             ],
             fromZigbee: [
