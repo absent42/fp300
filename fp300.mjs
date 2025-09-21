@@ -111,8 +111,8 @@ export default {
         modernExtend.illuminance(), // Works
         modernExtend.humidity(), // Works
         modernExtend.temperature(), // Works
-        lumi.lumiModernExtend.fp1eSpatialLearning(), // Works -  May require on-device button press to update setting.
-        lumi.lumiModernExtend.fp1eRestartDevice(), // Works - May require on-device button press to update setting.
+        lumi.lumiModernExtend.fp1eSpatialLearning(), // Works
+        lumi.lumiModernExtend.fp1eRestartDevice(), // Works
         modernExtend.identify(), // Works
 
         // Sampling parameters
@@ -300,7 +300,34 @@ export default {
                     .withValueMin(0)
                     .withValueMax((1 << 24) - 1)
                     .withValueStep(1)
-                    .withDescription("Specifies the range that is being detected. Requires mmWave radar mode. May require on-device button press to update setting.")
+                    .withDescription("Specifies the range that is being detected. Requires mmWave radar mode. Press the on-device button to wake the device up and refresh its' settings."),
+                e
+                    .composite("detection_range_composite", "detection_range_composite", ea.ALL)
+                    .withDescription("Specifies the range that is being detected. Requires mmWave radar mode. Press the on-device button to wake the device up and refresh its' settings.")
+                    .withFeature(e.binary("range_0", ea.STATE_SET, true, false).withDescription("Range 0.00m - 0.25m"))
+                    .withFeature(e.binary("range_1", ea.STATE_SET, true, false).withDescription("Range 0.25m - 0.50m"))
+                    .withFeature(e.binary("range_2", ea.STATE_SET, true, false).withDescription("Range 0.50m - 0.75m"))
+                    .withFeature(e.binary("range_3", ea.STATE_SET, true, false).withDescription("Range 0.75m - 1.00m"))
+                    .withFeature(e.binary("range_4", ea.STATE_SET, true, false).withDescription("Range 1.00m - 1.25m"))
+                    .withFeature(e.binary("range_5", ea.STATE_SET, true, false).withDescription("Range 1.25m - 1.50m"))
+                    .withFeature(e.binary("range_6", ea.STATE_SET, true, false).withDescription("Range 1.50m - 1.75m"))
+                    .withFeature(e.binary("range_7", ea.STATE_SET, true, false).withDescription("Range 1.75m - 2.00m"))
+                    .withFeature(e.binary("range_8", ea.STATE_SET, true, false).withDescription("Range 2.00m - 2.25m"))
+                    .withFeature(e.binary("range_9", ea.STATE_SET, true, false).withDescription("Range 2.25m - 2.50m"))
+                    .withFeature(e.binary("range_10", ea.STATE_SET, true, false).withDescription("Range 2.50m - 2.75m"))
+                    .withFeature(e.binary("range_11", ea.STATE_SET, true, false).withDescription("Range 2.75m - 3.00m"))
+                    .withFeature(e.binary("range_12", ea.STATE_SET, true, false).withDescription("Range 3.00m - 3.25m"))
+                    .withFeature(e.binary("range_13", ea.STATE_SET, true, false).withDescription("Range 3.25m - 3.50m"))
+                    .withFeature(e.binary("range_14", ea.STATE_SET, true, false).withDescription("Range 3.50m - 3.75m"))
+                    .withFeature(e.binary("range_15", ea.STATE_SET, true, false).withDescription("Range 3.75m - 4.00m"))
+                    .withFeature(e.binary("range_16", ea.STATE_SET, true, false).withDescription("Range 4.00m - 4.25m"))
+                    .withFeature(e.binary("range_17", ea.STATE_SET, true, false).withDescription("Range 4.25m - 4.50m"))
+                    .withFeature(e.binary("range_18", ea.STATE_SET, true, false).withDescription("Range 4.50m - 4.75m"))
+                    .withFeature(e.binary("range_19", ea.STATE_SET, true, false).withDescription("Range 4.75m - 5.00m"))
+                    .withFeature(e.binary("range_20", ea.STATE_SET, true, false).withDescription("Range 5.00m - 5.25m"))
+                    .withFeature(e.binary("range_21", ea.STATE_SET, true, false).withDescription("Range 5.25m - 5.50m"))
+                    .withFeature(e.binary("range_22", ea.STATE_SET, true, false).withDescription("Range 5.50m - 5.75m"))
+                    .withFeature(e.binary("range_23", ea.STATE_SET, true, false).withDescription("Range 5.75m - 6.00m"))
             ],
             fromZigbee: [
                 {
@@ -337,8 +364,8 @@ export default {
             ]
         },
 
+        // LED Indicator
         lumi.lumiModernExtend.lumiLedIndicator(),
-
         {
             isModernExtend: true,
             exposes: [
@@ -352,6 +379,28 @@ export default {
                     .withDescription(
                         "LED off schedule end time (HH:MM format)",
                     ),
+                e
+                    .composite("schedule_start_time_composite", "schedule_start_time_composite", ea.ALL)
+                    .withDescription("LED off schedule end time (HH:MM format)")
+                    .withFeature(e.enum("schedule_start_time_hour", ea.STATE_SET, ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]).withDescription("Hour"))
+                    .withFeature(e.enum("schedule_start_time_minue", ea.STATE_SET, ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59"]).withDescription("Minute")),
+                e
+                    .composite("schedule_end_time_composite", "schedule_end_time_composite", ea.ALL)
+                    .withDescription("LED on schedule end time (HH:MM format)")
+                    .withFeature(
+                        e
+                            .numeric("schedule_end_time_hour", ea.SET)
+                            .withValueMin(0)
+                            .withValueMax(23)
+                            .withValueStep(1)
+                    )
+                    .withFeature(
+                        e
+                            .numeric("schedule_end_time_minute", ea.SET)
+                            .withValueMin(0)
+                            .withValueMax(59)
+                            .withValueStep(1)
+                    )
             ],
             fromZigbee: [
                 {
