@@ -347,9 +347,9 @@ export default {
                 {
                     key: ["detection_range"],
                     convertSet: async (entity, key, value, meta) => {
-                        const buffer = Buffer.allocUnsafe(5)
-                        buffer.writeUIntLE(meta.state?.detection_range_prefix ?? 0x0300, 0, 2)
-                        buffer.writeUIntLE(value, 2, 3)
+                        const buffer = Buffer.allocUnsafe(5);
+                        buffer.writeUIntLE(meta.state?.detection_range_prefix ?? 0x0300, 0, 2);
+                        buffer.writeUIntLE(value, 2, 3);
 
                         await entity.write("manuSpecificLumi", {
                             410: {value: buffer, type: 0x41}
@@ -363,7 +363,18 @@ export default {
                 {
                     key: ["detection_range_composite"],
                     convertSet: async (entity, key, value, meta) => {
-                        console.log("FP300SET", value, key)
+                        const buffer = Buffer.allocUnsafe(5);
+                        buffer.writeUIntLE(meta.state?.detection_range_prefix ?? 0x0300, 0, 2);
+
+                        let intValue = 0;
+                        for (let i = 0; i < 24; ++i) {
+                            if (value[`detection_range_${i}`]) intValue |= 1 << i;
+                        }
+                        buffer.writeUIntLE(intValue, 2, 3);
+
+                        await entity.write("manuSpecificLumi", {
+                            410: {value: buffer, type: 0x41}
+                        }, {manufacturerCode: manufacturerCode});
                     },
                     convertGet: async (entity, key, meta) => {
                         const endpoint = meta.device.getEndpoint(1);
