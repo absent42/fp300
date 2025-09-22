@@ -403,7 +403,7 @@ export default {
                 e
                     .text("schedule_start_time", ea.ALL)
                     .withDescription(
-                        "LED disbale schedule start time (HH:MM format)",
+                        "LED disable schedule start time (HH:MM format)",
                     ),
                 e
                     .text("schedule_end_time", ea.ALL)
