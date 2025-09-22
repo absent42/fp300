@@ -9,34 +9,42 @@ const ea = exposes.access;
 const {manufacturerCode} = lumi;
 
 // Time encoding/decoding
-const parseTime = (timeStr) => {
-    if (typeof timeStr !== "string" || !timeStr.match(/^\d{1,2}:\d{1,2}$/)) {
-        throw new Error(`Invalid time format: ${timeStr}. Expected HH:MM`);
-    }
-    
-    const [hours, minutes] = timeStr.split(":").map((num) => Number.parseInt(num, 10));
-    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-        throw new Error(`Invalid time format: ${timeStr}`);
-    }
-    
-    return {hours, minutes};
-};
 function encodeTimeFormat(startTime, endTime) {
+    const parseTime = (timeStr) => {
+        if (typeof timeStr !== "string" || !timeStr.match(/^\d{1,2}:\d{2}$/)) {
+            throw new Error(`Invalid time format: ${timeStr}. Expected HH:MM`);
+        }
+        const [hours, minutes] = timeStr.split(":").map((num) => Number.parseInt(num, 10));
+        if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+            throw new Error(`Invalid time format: ${timeStr}`);
+        }
+        return {hours, minutes};
+    };
+
     const start = parseTime(startTime);
     const end = parseTime(endTime);
-    return start.hours | (start.minutes << 8) | (end.hours << 16) | (end.minutes << 24);
+    const value = start.hours | (start.minutes << 8) | (end.hours << 16) | (end.minutes << 24);
+
+    return value >>> 0;
 }
 
-const formatTime = (hours, minutes) => `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 function decodeTimeFormat(value) {
-    if (typeof value !== "number" || value < 0 || value > 0xffffffff) return null;
+    if (typeof value !== "number" || value < 0 || value > 0xffffffff) {
+        return null;
+    }
 
     const startHour = value & 0xff;
     const startMin = (value >> 8) & 0xff;
     const endHour = (value >> 16) & 0xff;
     const endMin = (value >> 24) & 0xff;
 
-    if (startHour > 23 || startMin > 59 || endHour > 23 || endMin > 59) return null;
+    if (startHour > 23 || startMin > 59 || endHour > 23 || endMin > 59) {
+        return null;
+    }
+
+    const formatTime = (hours, minutes) => {
+        return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+    };
 
     return {
         startTime: formatTime(startHour, startMin),
@@ -409,22 +417,30 @@ export default {
                     .text("schedule_end_time", ea.ALL)
                     .withDescription(
                         "LED off schedule end time (HH:MM format)",
-                    )
+                    ),
             ],
             fromZigbee: [
                 {
                     cluster: "manuSpecificLumi",
                     type: ["attributeReport", "readResponse"],
                     convert: async (model, msg, publish, options, meta) => {
-                        if (msg.data["574"] !== undefined) {
-                            const rawValue = msg.data["574"];
+                        if (msg.data[574] !== undefined) {
+                            const rawValue = msg.data[574];
                             const decoded = decodeTimeFormat(rawValue);
-
-                            return {
-                                schedule_start_time: decoded ? decoded.startTime : '--:--',
-                                schedule_end_time: decoded ? decoded.endTime : '--:--',
-                                schedule_time_raw: rawValue
+                            
+                            if (decoded) {
+                                return {
+                                    schedule_start_time: decoded.startTime,
+                                    schedule_end_time: decoded.endTime,
+                                    schedule_time_raw: rawValue,
+                                };
                             }
+                            
+                            return {
+                                schedule_start_time: "--:--",
+                                schedule_end_time: "--:--",
+                                schedule_time_raw: rawValue,
+                            };
                         }
                     },
                 },
@@ -434,28 +450,55 @@ export default {
                     key: ["schedule_start_time", "schedule_end_time"],
                     convertSet: async (entity, key, value, meta) => {
                         // Validate input
+                        if (!value || typeof value !== "string" || value.trim() === "") {
+                            throw new Error(`${key} cannot be empty. Please provide time in HH:MM format (e.g., "21:30")`);
+                        }
+                        
                         const trimmedValue = value.trim();
                         if (!trimmedValue.match(/^\d{1,2}:\d{2}$/)) {
                             throw new Error(`Invalid ${key} format: "${value}". Expected HH:MM format (e.g., "21:30")`);
                         }
                         
-                        // Read current and replace the attribute being edited
-                        const newData = {
-                            schedule_start_time: meta.state?.schedule_start_time ?? "00:00",
-                            schedule_end_time: meta.state?.schedule_end_time ?? "00:00"
-                        };
-                        newData[key] = decodeTimeFormat(currentValue);
-
-                        // Encode and write
-                        const encodedValue = encodeTimeFormat(newData.schedule_start_time, newData.schedule_end_time);
-                        newData.schedule_time_raw = encodedValue;
-                        await entity.write("manuSpecificLumi", { 574: { value: encodedValue, type: 0x0023 } }, {manufacturerCode: manufacturerCode});
+                        // Read current value to get the other time component
+                        const currentData = await entity.read("manuSpecificLumi", [574], {manufacturerCode: manufacturerCode});
+                        const currentValue = currentData[574] || 0;
+                        const currentDecoded = decodeTimeFormat(currentValue);
                         
-                        return { state: newData };
+                        let currentStart = "00:00";
+                        let currentEnd = "00:00";
+                        
+                        if (currentDecoded) {
+                            currentStart = currentDecoded.startTime;
+                            currentEnd = currentDecoded.endTime;
+                        }
+                        
+                        // Update time component
+                        const newStart = key === "schedule_start_time" ? trimmedValue : currentStart;
+                        const newEnd = key === "schedule_end_time" ? trimmedValue : currentEnd;
+                        
+                        // Encode and write
+                        const encodedValue = encodeTimeFormat(newStart, newEnd);
+                        
+                        await entity.write(
+                            "manuSpecificLumi",
+                            {
+                                574: {value: encodedValue, type: 35},
+                            },
+                            {manufacturerCode: manufacturerCode},
+                        );
+                        
+                        const decoded = decodeTimeFormat(encodedValue);
+                        return {
+                            state: {
+                                schedule_start_time: decoded ? decoded.startTime : newStart,
+                                schedule_end_time: decoded ? decoded.endTime : newEnd,
+                                schedule_time_raw: encodedValue,
+                            },
+                        };
                     },
                     convertGet: async (entity, key, meta) => {
                         const endpoint = meta.device.getEndpoint(1);
-                        await endpoint.read("manuSpecificLumi", [0x023e], {manufacturerCode: manufacturerCode});
+                        await endpoint.read("manuSpecificLumi", [574], {manufacturerCode: manufacturerCode});
                     },
                 },
             ],
