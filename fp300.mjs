@@ -32,9 +32,9 @@ function decodeTimeFormat(value) {
     if (typeof value !== "number" || value < 0 || value > 0xffffffff) return null;
 
     const startHour = value & 0xff;
-    const startMin = (value >> 8) & 0xff;
-    const endHour = (value >> 16) & 0xff;
-    const endMin = (value >> 24) & 0xff;
+    const startMin = (value >>> 8) & 0xff;
+    const endHour = (value >>> 16) & 0xff;
+    const endMin = (value >>> 24) & 0xff;
 
     if (startHour > 23 || startMin > 59 || endHour > 23 || endMin > 59) return null;
 
@@ -47,7 +47,7 @@ function decodeTimeFormat(value) {
 function encodeDetectionRangeComposite(detection_range_value) {
     const composite_values = {};
     for (let i = 0; i < 24; ++i) {
-        composite_values[`detection_range_${i}`] = ((detection_range_value >> i) & 1) == 1;
+        composite_values[`detection_range_${i}`] = ((detection_range_value >>> i) & 1) == 1;
     }
     return composite_values;
 }
