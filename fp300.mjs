@@ -44,6 +44,22 @@ function decodeTimeFormat(value) {
     };
 }
 
+function encodeDetectionRangeComposite(detection_range_value) {
+    const composite_values = {};
+    for (let i = 0; i < 24; ++i) {
+        composite_values[`detection_range_${i}`] = ((detection_range_value >> i) & 1) == 1;
+    }
+    return composite_values;
+}
+
+function decodeDetectionRangeComposite(composite_values) {
+    let intValue = 0;
+    for (let i = 0; i < 24; ++i) {
+        if (composite_values[`detection_range_${i}`]) intValue |= 1 << i;
+    }
+    return intValue;
+}
+
 export default {
     zigbeeModel: ["lumi.sensor_occupy.agl8"],
     model: "FP300",
@@ -321,16 +337,11 @@ export default {
                         if (msg.data["410"] && Buffer.isBuffer(msg.data["410"])) {
                             const buffer = msg.data["410"];
                             const detection_range_value = (buffer.length > 0) ? buffer.readUIntLE(2, 3) : 0xFFFFFF;
-                            const composite_values = {};
-                            for (let i = 0; i < 24; ++i) {
-                                composite_values[`detection_range_${i}`] = ((detection_range_value >> i) & 1) == 1;
-                            }
-
 
                             return {
                                 detection_range_prefix: (buffer.length > 0) ? buffer.readUIntLE(0, 2) : 0x0300,
                                 detection_range: detection_range_value,
-                                detection_range_composite: composite_values
+                                detection_range_composite: encodeDetectionRangeComposite(detection_range_value)
                             };
                         }
                     },
@@ -347,6 +358,12 @@ export default {
                         await entity.write("manuSpecificLumi", {
                             410: {value: buffer, type: 0x41}
                         }, {manufacturerCode: manufacturerCode});
+                        return {
+                            state: {
+                                detection_range: value,
+                                detection_range_composite: encodeDetectionRangeComposite(value)
+                            }
+                        };
                     },
                     convertGet: async (entity, key, meta) => {
                         const endpoint = meta.device.getEndpoint(1);
@@ -356,18 +373,19 @@ export default {
                 {
                     key: ["detection_range_composite"],
                     convertSet: async (entity, key, value, meta) => {
+                        const detection_range_value = decodeDetectionRangeComposite(value);
+                        
                         const buffer = Buffer.allocUnsafe(5);
                         buffer.writeUIntLE(meta.state?.detection_range_prefix ?? 0x0300, 0, 2);
+                        buffer.writeUIntLE(detection_range_value, 2, 3);
 
-                        let intValue = 0;
-                        for (let i = 0; i < 24; ++i) {
-                            if (value[`detection_range_${i}`]) intValue |= 1 << i;
-                        }
-                        buffer.writeUIntLE(intValue, 2, 3);
-
-                        await entity.write("manuSpecificLumi", {
-                            410: {value: buffer, type: 0x41}
-                        }, {manufacturerCode: manufacturerCode});
+                        await entity.write("manuSpecificLumi", { 410: {value: buffer, type: 0x41} }, {manufacturerCode: manufacturerCode});
+                        return {
+                            state: {
+                                detection_range: detection_range_value,
+                                detection_range_composite: value
+                            }
+                        };
                     },
                     convertGet: async (entity, key, meta) => {
                         const endpoint = meta.device.getEndpoint(1);
