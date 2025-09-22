@@ -452,7 +452,7 @@ export default {
                             schedule_start_time: meta.state?.schedule_start_time ?? "00:00",
                             schedule_end_time: meta.state?.schedule_end_time ?? "00:00"
                         };
-                        newData[key] = decodeTimeFormat(currentValue);
+                        newData[key] = value;
 
                         // Encode and write
                         const encodedValue = encodeTimeFormat(newData.schedule_start_time, newData.schedule_end_time);
