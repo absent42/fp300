@@ -44,6 +44,22 @@ function decodeTimeFormat(value) {
     };
 }
 
+function encodeDetectionRangeComposite(detection_range_value) {
+    const composite_values = {};
+    for (let i = 0; i < 24; ++i) {
+        composite_values[`detection_range_${i}`] = ((detection_range_value >> i) & 1) == 1;
+    }
+    return composite_values;
+}
+
+function decodeDetectionRangeComposite(composite_values) {
+    let intValue = 0;
+    for (let i = 0; i < 24; ++i) {
+        if (composite_values[`detection_range_${i}`]) intValue |= 1 << i;
+    }
+    return intValue;
+}
+
 export default {
     zigbeeModel: ["lumi.sensor_occupy.agl8"],
     model: "FP300",
@@ -103,8 +119,8 @@ export default {
         modernExtend.illuminance(), // Works
         modernExtend.humidity(), // Works
         modernExtend.temperature(), // Works
-        lumi.lumiModernExtend.fp1eSpatialLearning(), // Works -  May require on-device button press to update setting.
-        lumi.lumiModernExtend.fp1eRestartDevice(), // Works - May require on-device button press to update setting.
+        lumi.lumiModernExtend.fp1eSpatialLearning(), // Works
+        lumi.lumiModernExtend.fp1eRestartDevice(), // Works
         modernExtend.identify(), // Works
 
         // Sampling parameters
@@ -279,20 +295,39 @@ export default {
         {
             isModernExtend: true,
             exposes: [
-                // 2^0 = 0.00 - 0.25m    2^8  = 2.00 - 2.25m    2^16 = 4.00 - 4.25m
-                // 2^1 = 0.25 - 0.50m    2^9  = 2.25 - 2.50m    2^17 = 4.25 - 4.50m
-                // 2^2 = 0.50 - 0.75m    2^10 = 2.50 - 2.75m    2^18 = 4.50 - 4.75m
-                // 2^3 = 0.75 - 1.00m    2^11 = 2.75 - 3.00m    2^19 = 4.75 - 5.00m
-                // 2^4 = 1.00 - 1.25m    2^12 = 3.00 - 3.25m    2^20 = 5.00 - 5.25m
-                // 2^5 = 1.25 - 1.50m    2^13 = 3.25 - 3.50m    2^21 = 5.25 - 5.50m
-                // 2^6 = 1.50 - 1.75m    2^14 = 3.50 - 3.75m    2^22 = 5.50 - 5.75m
-                // 2^7 = 1.75 - 2.00m    2^15 = 3.75 - 4.00m    2^23 = 5.75 - 6.00m
                 e
                     .numeric('detection_range', ea.ALL)
                     .withValueMin(0)
                     .withValueMax((1 << 24) - 1)
                     .withValueStep(1)
-                    .withDescription("Specifies the range that is being detected. Requires mmWave radar mode. May require on-device button press to update setting.")
+                    .withDescription("Specifies the range that is being detected. Requires mmWave radar mode. Press the on-device button to wake the device up and refresh its' settings."),
+                e
+                    .composite("detection_range_composite", "detection_range_composite", ea.ALL)
+                    .withDescription("Specifies the detection range using set of boolean settings.")
+                    .withFeature(e.binary("detection_range_0", ea.SET, true, false).withDescription("0.00m - 0.25m"))
+                    .withFeature(e.binary("detection_range_1", ea.SET, true, false).withDescription("0.25m - 0.50m"))
+                    .withFeature(e.binary("detection_range_2", ea.SET, true, false).withDescription("0.50m - 0.75m"))
+                    .withFeature(e.binary("detection_range_3", ea.SET, true, false).withDescription("0.75m - 1.00m"))
+                    .withFeature(e.binary("detection_range_4", ea.SET, true, false).withDescription("1.00m - 1.25m"))
+                    .withFeature(e.binary("detection_range_5", ea.SET, true, false).withDescription("1.25m - 1.50m"))
+                    .withFeature(e.binary("detection_range_6", ea.SET, true, false).withDescription("1.50m - 1.75m"))
+                    .withFeature(e.binary("detection_range_7", ea.SET, true, false).withDescription("1.75m - 2.00m"))
+                    .withFeature(e.binary("detection_range_8", ea.SET, true, false).withDescription("2.00m - 2.25m"))
+                    .withFeature(e.binary("detection_range_9", ea.SET, true, false).withDescription("2.25m - 2.50m"))
+                    .withFeature(e.binary("detection_range_10", ea.SET, true, false).withDescription("2.50m - 2.75m"))
+                    .withFeature(e.binary("detection_range_11", ea.SET, true, false).withDescription("2.75m - 3.00m"))
+                    .withFeature(e.binary("detection_range_12", ea.SET, true, false).withDescription("3.00m - 3.25m"))
+                    .withFeature(e.binary("detection_range_13", ea.SET, true, false).withDescription("3.25m - 3.50m"))
+                    .withFeature(e.binary("detection_range_14", ea.SET, true, false).withDescription("3.50m - 3.75m"))
+                    .withFeature(e.binary("detection_range_15", ea.SET, true, false).withDescription("3.75m - 4.00m"))
+                    .withFeature(e.binary("detection_range_16", ea.SET, true, false).withDescription("4.00m - 4.25m"))
+                    .withFeature(e.binary("detection_range_17", ea.SET, true, false).withDescription("4.25m - 4.50m"))
+                    .withFeature(e.binary("detection_range_18", ea.SET, true, false).withDescription("4.50m - 4.75m"))
+                    .withFeature(e.binary("detection_range_19", ea.SET, true, false).withDescription("4.75m - 5.00m"))
+                    .withFeature(e.binary("detection_range_20", ea.SET, true, false).withDescription("5.00m - 5.25m"))
+                    .withFeature(e.binary("detection_range_21", ea.SET, true, false).withDescription("5.25m - 5.50m"))
+                    .withFeature(e.binary("detection_range_22", ea.SET, true, false).withDescription("5.50m - 5.75m"))
+                    .withFeature(e.binary("detection_range_23", ea.SET, true, false).withDescription("5.75m - 6.00m"))
             ],
             fromZigbee: [
                 {
@@ -300,11 +335,14 @@ export default {
                     type: ["attributeReport", "readResponse"],
                     convert: async (model, msg, publish, options, meta) => {
                         if (msg.data["410"] && Buffer.isBuffer(msg.data["410"])) {
-                            const buffer = msg.data["410"]
+                            const buffer = msg.data["410"];
+                            const detection_range_value = (buffer.length > 0) ? buffer.readUIntLE(2, 3) : 0xFFFFFF;
+
                             return {
                                 detection_range_prefix: (buffer.length > 0) ? buffer.readUIntLE(0, 2) : 0x0300,
-                                detection_range: (buffer.length > 0) ? buffer.readUIntLE(2, 3) : 0xFFFFFF
-                            }
+                                detection_range: detection_range_value,
+                                detection_range_composite: encodeDetectionRangeComposite(detection_range_value)
+                            };
                         }
                     },
                 }
@@ -313,13 +351,41 @@ export default {
                 {
                     key: ["detection_range"],
                     convertSet: async (entity, key, value, meta) => {
-                        const buffer = Buffer.allocUnsafe(5)
-                        buffer.writeUIntLE(meta.state?.detection_range_prefix ?? 0x0300, 0, 2)
-                        buffer.writeUIntLE(value, 2, 3)
+                        const buffer = Buffer.allocUnsafe(5);
+                        buffer.writeUIntLE(meta.state?.detection_range_prefix ?? 0x0300, 0, 2);
+                        buffer.writeUIntLE(value, 2, 3);
 
                         await entity.write("manuSpecificLumi", {
                             410: {value: buffer, type: 0x41}
                         }, {manufacturerCode: manufacturerCode});
+                        return {
+                            state: {
+                                detection_range: value,
+                                detection_range_composite: encodeDetectionRangeComposite(value)
+                            }
+                        };
+                    },
+                    convertGet: async (entity, key, meta) => {
+                        const endpoint = meta.device.getEndpoint(1);
+                        await endpoint.read("manuSpecificLumi", [0x019a], {manufacturerCode: manufacturerCode});
+                    }
+                },
+                {
+                    key: ["detection_range_composite"],
+                    convertSet: async (entity, key, value, meta) => {
+                        const detection_range_value = decodeDetectionRangeComposite(value);
+                        
+                        const buffer = Buffer.allocUnsafe(5);
+                        buffer.writeUIntLE(meta.state?.detection_range_prefix ?? 0x0300, 0, 2);
+                        buffer.writeUIntLE(detection_range_value, 2, 3);
+
+                        await entity.write("manuSpecificLumi", { 410: {value: buffer, type: 0x41} }, {manufacturerCode: manufacturerCode});
+                        return {
+                            state: {
+                                detection_range: detection_range_value,
+                                detection_range_composite: value
+                            }
+                        };
                     },
                     convertGet: async (entity, key, meta) => {
                         const endpoint = meta.device.getEndpoint(1);
@@ -329,8 +395,8 @@ export default {
             ]
         },
 
+        // LED Indicator
         lumi.lumiModernExtend.lumiLedIndicator(),
-
         {
             isModernExtend: true,
             exposes: [
@@ -343,7 +409,7 @@ export default {
                     .text("schedule_end_time", ea.ALL)
                     .withDescription(
                         "LED off schedule end time (HH:MM format)",
-                    ),
+                    )
             ],
             fromZigbee: [
                 {
