@@ -329,16 +329,17 @@ export default {
                         if (msg.data["410"] && Buffer.isBuffer(msg.data["410"])) {
                             const buffer = msg.data["410"];
                             const detection_range_value = (buffer.length > 0) ? buffer.readUIntLE(2, 3) : 0xFFFFFF;
-                            const payload = {
-                                detection_range_prefix: (buffer.length > 0) ? buffer.readUIntLE(0, 2) : 0x0300,
-                                detection_range: detection_range_value
-                            };
-
+                            const composite_values = {};
                             for (let i = 0; i < 24; ++i) {
-                                payload[`detection_range_${i}`] = ((detection_range_value >> i) & 1) == 1;
+                                composite_values[`detection_range_${i}`] = ((detection_range_value >> i) & 1) == 1;
                             }
 
-                            return payload;
+
+                            return {
+                                detection_range_prefix: (buffer.length > 0) ? buffer.readUIntLE(0, 2) : 0x0300,
+                                detection_range: detection_range_value,
+                                detection_range_composite: composite_values
+                            };
                         }
                     },
                 }
