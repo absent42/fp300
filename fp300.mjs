@@ -396,19 +396,19 @@ export default {
         },
 
         // LED Indicator
-        lumi.lumiModernExtend.lumiLedIndicator(),
+        lumi.lumiModernExtend.lumiLedDisabledNight(),
         {
             isModernExtend: true,
             exposes: [
                 e
                     .text("schedule_start_time", ea.ALL)
                     .withDescription(
-                        "LED off schedule start time (HH:MM format)",
+                        "LED disbale schedule start time (HH:MM format)",
                     ),
                 e
                     .text("schedule_end_time", ea.ALL)
                     .withDescription(
-                        "LED off schedule end time (HH:MM format)",
+                        "LED disable schedule end time (HH:MM format)",
                     )
             ],
             fromZigbee: [
