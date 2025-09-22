@@ -287,14 +287,6 @@ export default {
         {
             isModernExtend: true,
             exposes: [
-                // 2^0 = 0.00 - 0.25m    2^8  = 2.00 - 2.25m    2^16 = 4.00 - 4.25m
-                // 2^1 = 0.25 - 0.50m    2^9  = 2.25 - 2.50m    2^17 = 4.25 - 4.50m
-                // 2^2 = 0.50 - 0.75m    2^10 = 2.50 - 2.75m    2^18 = 4.50 - 4.75m
-                // 2^3 = 0.75 - 1.00m    2^11 = 2.75 - 3.00m    2^19 = 4.75 - 5.00m
-                // 2^4 = 1.00 - 1.25m    2^12 = 3.00 - 3.25m    2^20 = 5.00 - 5.25m
-                // 2^5 = 1.25 - 1.50m    2^13 = 3.25 - 3.50m    2^21 = 5.25 - 5.50m
-                // 2^6 = 1.50 - 1.75m    2^14 = 3.50 - 3.75m    2^22 = 5.50 - 5.75m
-                // 2^7 = 1.75 - 2.00m    2^15 = 3.75 - 4.00m    2^23 = 5.75 - 6.00m
                 e
                     .numeric('detection_range', ea.ALL)
                     .withValueMin(0)
@@ -303,31 +295,31 @@ export default {
                     .withDescription("Specifies the range that is being detected. Requires mmWave radar mode. Press the on-device button to wake the device up and refresh its' settings."),
                 e
                     .composite("detection_range_composite", "detection_range_composite", ea.ALL)
-                    .withDescription("Specifies the range that is being detected. Requires mmWave radar mode. Press the on-device button to wake the device up and refresh its' settings.")
-                    .withFeature(e.binary("range_0", ea.STATE_SET, true, false).withDescription("Range 0.00m - 0.25m"))
-                    .withFeature(e.binary("range_1", ea.STATE_SET, true, false).withDescription("Range 0.25m - 0.50m"))
-                    .withFeature(e.binary("range_2", ea.STATE_SET, true, false).withDescription("Range 0.50m - 0.75m"))
-                    .withFeature(e.binary("range_3", ea.STATE_SET, true, false).withDescription("Range 0.75m - 1.00m"))
-                    .withFeature(e.binary("range_4", ea.STATE_SET, true, false).withDescription("Range 1.00m - 1.25m"))
-                    .withFeature(e.binary("range_5", ea.STATE_SET, true, false).withDescription("Range 1.25m - 1.50m"))
-                    .withFeature(e.binary("range_6", ea.STATE_SET, true, false).withDescription("Range 1.50m - 1.75m"))
-                    .withFeature(e.binary("range_7", ea.STATE_SET, true, false).withDescription("Range 1.75m - 2.00m"))
-                    .withFeature(e.binary("range_8", ea.STATE_SET, true, false).withDescription("Range 2.00m - 2.25m"))
-                    .withFeature(e.binary("range_9", ea.STATE_SET, true, false).withDescription("Range 2.25m - 2.50m"))
-                    .withFeature(e.binary("range_10", ea.STATE_SET, true, false).withDescription("Range 2.50m - 2.75m"))
-                    .withFeature(e.binary("range_11", ea.STATE_SET, true, false).withDescription("Range 2.75m - 3.00m"))
-                    .withFeature(e.binary("range_12", ea.STATE_SET, true, false).withDescription("Range 3.00m - 3.25m"))
-                    .withFeature(e.binary("range_13", ea.STATE_SET, true, false).withDescription("Range 3.25m - 3.50m"))
-                    .withFeature(e.binary("range_14", ea.STATE_SET, true, false).withDescription("Range 3.50m - 3.75m"))
-                    .withFeature(e.binary("range_15", ea.STATE_SET, true, false).withDescription("Range 3.75m - 4.00m"))
-                    .withFeature(e.binary("range_16", ea.STATE_SET, true, false).withDescription("Range 4.00m - 4.25m"))
-                    .withFeature(e.binary("range_17", ea.STATE_SET, true, false).withDescription("Range 4.25m - 4.50m"))
-                    .withFeature(e.binary("range_18", ea.STATE_SET, true, false).withDescription("Range 4.50m - 4.75m"))
-                    .withFeature(e.binary("range_19", ea.STATE_SET, true, false).withDescription("Range 4.75m - 5.00m"))
-                    .withFeature(e.binary("range_20", ea.STATE_SET, true, false).withDescription("Range 5.00m - 5.25m"))
-                    .withFeature(e.binary("range_21", ea.STATE_SET, true, false).withDescription("Range 5.25m - 5.50m"))
-                    .withFeature(e.binary("range_22", ea.STATE_SET, true, false).withDescription("Range 5.50m - 5.75m"))
-                    .withFeature(e.binary("range_23", ea.STATE_SET, true, false).withDescription("Range 5.75m - 6.00m"))
+                    .withDescription("Specifies the detection range using set of boolean settings.")
+                    .withFeature(e.binary("detection_range_0", ea.SET, true, false).withDescription("0.00m - 0.25m"))
+                    .withFeature(e.binary("detection_range_1", ea.SET, true, false).withDescription("0.25m - 0.50m"))
+                    .withFeature(e.binary("detection_range_2", ea.SET, true, false).withDescription("0.50m - 0.75m"))
+                    .withFeature(e.binary("detection_range_3", ea.SET, true, false).withDescription("0.75m - 1.00m"))
+                    .withFeature(e.binary("detection_range_4", ea.SET, true, false).withDescription("1.00m - 1.25m"))
+                    .withFeature(e.binary("detection_range_5", ea.SET, true, false).withDescription("1.25m - 1.50m"))
+                    .withFeature(e.binary("detection_range_6", ea.SET, true, false).withDescription("1.50m - 1.75m"))
+                    .withFeature(e.binary("detection_range_7", ea.SET, true, false).withDescription("1.75m - 2.00m"))
+                    .withFeature(e.binary("detection_range_8", ea.SET, true, false).withDescription("2.00m - 2.25m"))
+                    .withFeature(e.binary("detection_range_9", ea.SET, true, false).withDescription("2.25m - 2.50m"))
+                    .withFeature(e.binary("detection_range_10", ea.SET, true, false).withDescription("2.50m - 2.75m"))
+                    .withFeature(e.binary("detection_range_11", ea.SET, true, false).withDescription("2.75m - 3.00m"))
+                    .withFeature(e.binary("detection_range_12", ea.SET, true, false).withDescription("3.00m - 3.25m"))
+                    .withFeature(e.binary("detection_range_13", ea.SET, true, false).withDescription("3.25m - 3.50m"))
+                    .withFeature(e.binary("detection_range_14", ea.SET, true, false).withDescription("3.50m - 3.75m"))
+                    .withFeature(e.binary("detection_range_15", ea.SET, true, false).withDescription("3.75m - 4.00m"))
+                    .withFeature(e.binary("detection_range_16", ea.SET, true, false).withDescription("4.00m - 4.25m"))
+                    .withFeature(e.binary("detection_range_17", ea.SET, true, false).withDescription("4.25m - 4.50m"))
+                    .withFeature(e.binary("detection_range_18", ea.SET, true, false).withDescription("4.50m - 4.75m"))
+                    .withFeature(e.binary("detection_range_19", ea.SET, true, false).withDescription("4.75m - 5.00m"))
+                    .withFeature(e.binary("detection_range_20", ea.SET, true, false).withDescription("5.00m - 5.25m"))
+                    .withFeature(e.binary("detection_range_21", ea.SET, true, false).withDescription("5.25m - 5.50m"))
+                    .withFeature(e.binary("detection_range_22", ea.SET, true, false).withDescription("5.50m - 5.75m"))
+                    .withFeature(e.binary("detection_range_23", ea.SET, true, false).withDescription("5.75m - 6.00m"))
             ],
             fromZigbee: [
                 {
@@ -335,11 +327,18 @@ export default {
                     type: ["attributeReport", "readResponse"],
                     convert: async (model, msg, publish, options, meta) => {
                         if (msg.data["410"] && Buffer.isBuffer(msg.data["410"])) {
-                            const buffer = msg.data["410"]
-                            return {
+                            const buffer = msg.data["410"];
+                            const detection_range_value = (buffer.length > 0) ? buffer.readUIntLE(2, 3) : 0xFFFFFF;
+                            const payload = {
                                 detection_range_prefix: (buffer.length > 0) ? buffer.readUIntLE(0, 2) : 0x0300,
-                                detection_range: (buffer.length > 0) ? buffer.readUIntLE(2, 3) : 0xFFFFFF
+                                detection_range: detection_range_value
+                            };
+
+                            for (let i = 0; i < 24; ++i) {
+                                payload[`detection_range_${i}`] = ((detection_range_value >> i) & 1) == 1;
                             }
+
+                            return payload;
                         }
                     },
                 }
@@ -355,6 +354,16 @@ export default {
                         await entity.write("manuSpecificLumi", {
                             410: {value: buffer, type: 0x41}
                         }, {manufacturerCode: manufacturerCode});
+                    },
+                    convertGet: async (entity, key, meta) => {
+                        const endpoint = meta.device.getEndpoint(1);
+                        await endpoint.read("manuSpecificLumi", [0x019a], {manufacturerCode: manufacturerCode});
+                    }
+                },
+                {
+                    key: ["detection_range_composite"],
+                    convertSet: async (entity, key, value, meta) => {
+                        console.log("FP300SET", value, key)
                     },
                     convertGet: async (entity, key, meta) => {
                         const endpoint = meta.device.getEndpoint(1);
