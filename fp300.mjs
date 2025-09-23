@@ -115,6 +115,19 @@ export default {
             description: "Value for delay before the device reports absence when no presence is detected",
             zigbeeCommandOptions: {manufacturerCode},
         }),
+
+        modernExtend.numeric({
+            name: "PIR_detection_interval",
+            valueMin: 2, // Min: 2S
+            valueMax: 300, // Max: 300s
+            valueStep: 1, // Step: 1s
+            scale: 1,
+            unit: "sec",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x014f, type: Zcl.DataType.UINT16}, // Attribute: 335
+            description: "Higher detection frequency results in higher accuracy but lower battery life.",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
         
         modernExtend.illuminance(), // Works
         modernExtend.humidity(), // Works
