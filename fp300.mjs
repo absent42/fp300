@@ -94,6 +94,15 @@ export default {
             //percentageAtrribute: 0x0018 // Attribute: 24 // TODO: Should confirm to be sure
         }),
         lumi.lumiModernExtend.fp1ePresence(), // Works
+        modernExtend.binary({
+            name: "pir_detection",
+            valueOn: [true, 1],
+            valueOff: [false, 0],
+            access: "STATE_GET",
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x014d, type: 0x20},
+            description: "Indicates whether the PIR sensor detects motion (in mmWave + PIR mode after mmWave presence detection PIR sensors gets turned off so this attribute might change to false although the presence is detected).",
+        }),
 
         modernExtend.enumLookup({
             name: "presence_detection_options",
