@@ -62,7 +62,7 @@ function decodeDetectionRangeComposite(composite_values) {
 
 export default {
     zigbeeModel: ["lumi.sensor_occupy.agl8"],
-    model: "FP300",
+    model: "PS-S04D",
     vendor: "Aqara",
     description: "Presence sensor FP300",
     fromZigbee: [
