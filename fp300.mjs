@@ -269,7 +269,7 @@ export default {
             zigbeeCommandOptions: {manufacturerCode},
         }),
         modernExtend.numeric({
-            name: "light__reporting_threshold",
+            name: "light_reporting_threshold",
             valueMin: 3, // Min: 3%
             valueMax: 20, /// Max: 20%
             valueStep: 0.5, // Step: 0,5%
