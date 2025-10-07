@@ -88,6 +88,7 @@ export default {
         await endpoint.read("manuSpecificLumi", [0x019a], {manufacturerCode: manufacturerCode}); // Read detection range
     },
     extend: [
+        lumi.lumiModernExtend.lumiPreventLeave(),
         lumi.lumiModernExtend.lumiBattery({
             voltageToPercentage: {min: 2850, max: 3000},
             voltageAttribute: 0x0017, // Attribute: 23
@@ -110,6 +111,28 @@ export default {
             cluster: "manuSpecificLumi",
             attribute: {ID: 0x0199, type: Zcl.DataType.UINT8}, // Attribute: 409
             description: "Presence detection sensor type",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+
+        modernExtend.binary({
+            name: "ai_interference_source_selfidentification",
+            valueOn: ["ON", 1],
+            valueOff: ["OFF", 0],
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x015e, type: 0x20}, // Attribute: 350
+            description: "AI interference source self-identification switch (identifies interference sources such as fans and air conditioners)",
+            access: "ALL",
+            zigbeeCommandOptions: {manufacturerCode},
+        }),
+
+        modernExtend.binary({
+            name: "ai_sensitivity_adaptive",
+            valueOn: ["ON", 1],
+            valueOff: ["OFF", 0],
+            cluster: "manuSpecificLumi",
+            attribute: {ID: 0x015d, type: 0x20}, // Attribute: 349
+            description: "AI adaptive sensitivity",
+            access: "ALL",
             zigbeeCommandOptions: {manufacturerCode},
         }),
 
